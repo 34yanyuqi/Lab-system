@@ -1,0 +1,1145 @@
+/* ========== pages-dashboard：业务页面（统计 / 任务 / 进度 / 考勤）附全局响应式 ========== */
+
+.stat-card .ant-card-body {
+  padding: 18px 20px;
+}
+
+.stat-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.stat-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+}
+
+.stat-icon.blue {
+  background: var(--primary-soft);
+  color: var(--primary-color);
+}
+
+.stat-icon.green {
+  background: rgba(82, 196, 26, 0.15);
+  color: var(--success-color);
+}
+
+.stat-icon.orange {
+  background: rgba(250, 173, 20, 0.15);
+  color: var(--warning-color);
+}
+
+.stat-icon.red {
+  background: rgba(240, 68, 56, 0.15);
+  color: #f04438;
+}
+
+.stat-value {
+  font-size: 28px;
+  line-height: 1.2;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.stat-label {
+  margin-top: 6px;
+  color: var(--text-secondary);
+}
+
+.action-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.action-tile {
+  text-align: left;
+  background: var(--bg-soft);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 18px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  cursor: pointer;
+  transition: var(--transition-base);
+}
+
+.action-tile:hover {
+  transform: translateY(-3px);
+  border-color: var(--primary-color);
+  box-shadow: var(--shadow-glow);
+}
+
+.action-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: var(--primary-soft);
+  color: var(--primary-color);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.action-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.action-text strong {
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--text-primary);
+}
+
+.action-text small {
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.remaining-days,
+.submit-stat {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 76px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.submit-stat {
+  background: var(--primary-soft);
+  color: var(--primary-color);
+}
+
+.remaining-days.normal {
+  background: var(--primary-soft);
+  color: var(--primary-color);
+}
+
+.remaining-days.urgent {
+  background: rgba(250, 173, 20, 0.15);
+  color: var(--warning-color);
+}
+
+.remaining-days.expired {
+  background: var(--border-light);
+  color: var(--text-secondary);
+}
+
+.detail-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.detail-block h4,
+.task-info-content h4 {
+  margin: 0 0 10px;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.detail-box,
+.file-info {
+  padding: 14px 16px;
+  background: var(--bg-soft);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-primary);
+}
+
+.detail-box-remark {
+  border-left: 4px solid var(--primary-color);
+}
+
+.task-card .ant-card-body {
+  padding: 18px 20px;
+}
+
+.task-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  gap: 12px;
+}
+
+.task-date {
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+.task-title {
+  margin: 0 0 12px;
+  font-size: 20px;
+  line-height: 1.35;
+  color: var(--text-primary);
+}
+
+.task-content {
+  margin: 0 0 16px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+.task-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-color);
+  gap: 12px;
+}
+
+.task-doc-inline {
+  margin-bottom: 14px;
+}
+
+.task-teacher {
+  color: var(--text-tertiary);
+  font-size: 13px;
+}
+
+.task-info-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.task-info-header h2 {
+  margin: 0;
+  font-size: 22px;
+  color: var(--text-primary);
+}
+
+.task-info-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-bottom: 20px;
+  color: var(--text-secondary);
+}
+
+.task-info-content p {
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: 1.8;
+}
+
+.task-attachment-panel {
+  margin-bottom: 18px;
+}
+
+.task-attachment-panel h4 {
+  margin: 0 0 10px;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.file-info {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.attachment-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--primary);
+  font-weight: 500;
+  min-width: 0;
+}
+
+.attachment-link:hover {
+  color: var(--primary-hover);
+}
+
+.attachment-link span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.attachment-file-icon {
+  flex: 0 0 auto;
+  font-size: 16px;
+}
+
+.attachment-file-icon.pdf {
+  color: #ef4444;
+}
+
+.attachment-file-icon.word {
+  color: #2563eb;
+}
+
+.attachment-file-icon.ppt {
+  color: #f97316;
+}
+
+.attachment-file-icon.txt {
+  color: #64748b;
+}
+
+.attachment-file-icon.xls {
+  color: #16a34a;
+}
+
+.attachment-file-icon.zip {
+  color: #8b5cf6;
+}
+
+.attachment-file-icon.default {
+  color: #7c8aa5;
+}
+
+.attachment-download-icon {
+  flex: 0 0 auto;
+  font-size: 14px;
+  opacity: 0.75;
+}
+
+.attachment-empty-text {
+  color: var(--text-tertiary);
+}
+
+
+/* 进度检查 - 移动端卡片视图 */
+.check-mobile-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.check-mobile-card {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background: var(--bg-soft);
+  overflow: hidden;
+}
+
+.check-mobile-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  border-bottom: 1px solid var(--border-color);
+  gap: 12px;
+}
+
+.check-mobile-student {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.check-mobile-student-id {
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+
+.check-mobile-student-name {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.check-mobile-progress {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.check-mobile-progress-text {
+  font-size: 11px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.check-mobile-weeks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 10px 12px;
+}
+
+.check-mobile-week {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: var(--bg-page);
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: var(--transition-base);
+  flex: 1;
+  min-width: calc(50% - 3px);
+  max-width: calc(50% - 3px);
+}
+
+.check-mobile-week:hover {
+  border-color: var(--primary-color);
+  background: var(--primary-soft);
+}
+
+.check-mobile-week.current {
+  border-color: var(--primary-color);
+  border-width: 2px;
+}
+
+.check-mobile-week.submitted {
+  background: rgba(34, 197, 94, 0.06);
+  border-color: rgba(34, 197, 94, 0.2);
+}
+
+.check-mobile-week-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.check-mobile-week-date {
+  font-size: 10px;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+  flex: 1;
+  text-align: center;
+}
+
+/* 进度检查 - 任务卡片标题 */
+.check-task-card .ant-card-head {
+  min-height: auto;
+}
+
+.check-task-card-title {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.check-task-card-title-main {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text-primary);
+  word-break: break-all;
+}
+
+.check-task-card-title-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.check-task-card-title-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.check-task-card-title-desktop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.calendar-container {
+  overflow-x: auto;
+}
+
+.calendar-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.calendar-header-cell {
+  border: 1px solid var(--border-color);
+  padding: 8px;
+  text-align: center;
+  background: var(--table-header-bg);
+  font-weight: 600;
+  width: 14.28%;
+}
+
+.calendar-cell {
+  border: 1px solid var(--border-color);
+  padding: 4px;
+  text-align: center;
+  min-height: 80px;
+  vertical-align: top;
+}
+
+.calendar-empty-cell {
+  background: var(--bg-soft);
+}
+
+/* 考勤日历单元格（学生端 / 导师端共用） */
+.cal-th {
+  padding: 8px 4px;
+  text-align: center;
+  font-weight: 600;
+  width: 14.28%;
+  color: var(--text-primary);
+}
+
+.cal-td {
+  padding: 6px 4px;
+  text-align: center;
+  vertical-align: top;
+  min-height: 50px;
+}
+
+.cal-td-empty {
+  background: var(--bg-soft);
+}
+
+.cal-td-day {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.cal-td-status {
+  margin-top: 2px;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+/* 暗色模式下把状态色提亮，保证小字号也能看清 */
+[data-theme="dark"] .cal-td-status {
+  filter: brightness(1.45) saturate(0.95);
+}
+
+.calendar-day-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.calendar-day-number {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.calendar-anomaly-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 12px;
+  width: 100%;
+}
+
+.calendar-anomaly-item {
+  line-height: 1.4;
+  word-break: break-all;
+}
+
+.calendar-day-normal {
+  font-size: 11px;
+  color: var(--success-color);
+}
+
+.calendar-legend {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 16px;
+  font-size: 12px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend-color {
+  font-weight: 500;
+}
+
+.legend-text {
+  color: var(--text-secondary);
+}
+
+/* ==========================================================================
+   8. 响应式与移动端
+   —— 断点：992（小笔记本/平板横屏）、768（平板竖屏/手机横屏）、
+           480（普通手机）、380（小屏手机）
+   ========================================================================== */
+
+/* ---------- 平板 / 小笔记本 ---------- */
+@media (max-width: 1100px) {
+  .login-page-shell {
+    padding: 28px 18px 24px;
+  }
+
+  .login-hero-card {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .login-panel-attachment {
+    margin-left: 0;
+    width: 100%;
+    max-width: 420px;
+    justify-self: center;
+  }
+}
+
+@media (max-width: 992px) {
+  .action-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .batch-review-left {
+    width: 250px;
+    min-width: 250px;
+  }
+
+  .header-clock {
+    display: none;
+  }
+}
+
+/* ---------- 手机 / 平板竖屏 ---------- */
+@media (max-width: 768px) {
+  :root {
+    --header-height: 56px;
+    --content-gutter: 12px;
+  }
+
+  /* 固定侧边栏在手机上会和内容重叠，统一改用抽屉导航 */
+  .portal-sider {
+    display: none !important;
+  }
+
+  .portal-content {
+    margin-left: 0 !important;
+    padding: var(--content-gutter) !important;
+    padding-top: var(--content-gutter) !important;
+    padding-bottom: calc(var(--content-gutter) + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  .portal-main {
+    padding-top: var(--header-height);
+  }
+
+  .portal-footer {
+    margin-left: 0;
+    padding: 12px var(--content-gutter) !important;
+  }
+
+  .portal-header {
+    left: 0 !important;
+    padding: 0 12px !important;
+    gap: 8px;
+  }
+
+  .portal-header-left {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    flex: 1;
+  }
+
+  .portal-header-left h3 {
+    font-size: 16px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .portal-header-right {
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  /* 输入框字号 < 16px 会触发 iOS 聚焦缩放 */
+  .ant-input,
+  .ant-input-affix-wrapper input,
+  .ant-input-number-input,
+  .ant-select-selection-search-input,
+  .ant-picker-input > input,
+  .ant-input-affix-wrapper textarea,
+  textarea.ant-input {
+    font-size: 16px !important;
+  }
+
+  /* 触控目标不小于 40px */
+  .ant-btn {
+    min-height: 36px;
+  }
+
+  .ant-btn-sm {
+    min-height: 32px;
+  }
+
+  .ant-switch,
+  .ant-checkbox-inner,
+  .ant-radio-inner {
+    touch-action: manipulation;
+  }
+
+  /* 模态框 / 抽屉 / 浮层不要超出视口 */
+  .ant-modal {
+    max-width: calc(100vw - 24px) !important;
+    margin: 12px auto !important;
+    top: 0;
+    padding-bottom: 24px;
+  }
+
+  .ant-modal-content {
+    padding: 16px !important;
+    border-radius: var(--radius-lg) !important;
+  }
+
+  .ant-modal-body {
+    max-height: calc(100vh - 220px);
+    overflow-y: auto;
+  }
+
+  .ant-drawer-content-wrapper {
+    max-width: 92vw;
+  }
+
+  .ant-select-dropdown,
+  .ant-picker-dropdown,
+  .ant-dropdown,
+  .ant-popover {
+    max-width: calc(100vw - 24px);
+  }
+
+  .ant-picker-panel-container {
+    overflow-x: auto;
+  }
+
+  .ant-popover-inner {
+    max-width: calc(100vw - 24px);
+  }
+
+  .notification-popover .ant-popover-inner {
+    width: min(92vw, 360px) !important;
+    max-height: 70vh;
+  }
+
+  /* 卡片与内容间距收紧 */
+  .compact-card .ant-card-body,
+  .ant-card-body {
+    padding: 14px !important;
+  }
+
+  .ant-card-head {
+    padding: 0 14px !important;
+    min-height: 46px;
+  }
+
+  .card-head {
+    margin-bottom: 12px;
+  }
+
+  .section-gap {
+    margin-top: 14px;
+  }
+
+  /* 表格：小屏允许横向滚动，别把列压成一团 */
+  .ant-table-wrapper,
+  .ant-table-content {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .ant-table {
+    font-size: 12px !important;
+  }
+
+  .ant-table-thead > tr > th,
+  .ant-table-tbody > tr > td {
+    padding: 8px 8px !important;
+  }
+
+  .ant-table-cell img {
+    max-height: 140px;
+  }
+
+  .ant-pagination {
+    flex-wrap: wrap;
+    row-gap: 8px;
+  }
+
+  .ant-pagination-options {
+    margin-inline-start: 0;
+  }
+
+  /* 自定义表格 */
+  .twl-table {
+    min-width: 460px;
+    font-size: 11px;
+  }
+
+  .twl-table th,
+  .twl-table td {
+    padding: 4px 2px;
+  }
+
+  .calendar-container {
+    margin-inline: calc(var(--content-gutter) * -1);
+    padding-inline: var(--content-gutter);
+  }
+
+  .calendar-table {
+    min-width: 520px;
+  }
+
+  /* 统计卡与动作磁贴 */
+  .stat-card .ant-card-body {
+    padding: 14px !important;
+  }
+
+  .stat-content {
+    gap: 12px;
+  }
+
+  .stat-icon {
+    width: 44px;
+    height: 44px;
+    font-size: 18px;
+    border-radius: var(--radius-md);
+  }
+
+  .stat-value {
+    font-size: 22px;
+  }
+
+  .stat-label {
+    margin-top: 2px;
+    font-size: 12px;
+  }
+
+  .action-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .action-tile {
+    flex-direction: row;
+    align-items: center;
+    padding: 14px;
+    gap: 12px;
+  }
+
+  .action-icon {
+    width: 38px;
+    height: 38px;
+    font-size: 16px;
+  }
+
+  /* 卡片内的横向排列改为纵向堆叠 */
+  .task-footer,
+  .task-header,
+  .task-info-header,
+  .card-head-between,
+  .check-task-card-title-desktop {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .task-footer .ant-space,
+  .task-info-header .ant-space {
+    width: 100%;
+  }
+
+  .header-actions {
+    width: 100%;
+    gap: 8px;
+  }
+
+  .header-actions .ant-btn {
+    flex: 1 1 auto;
+  }
+
+  .detail-pane,
+  .detail-block {
+    gap: 12px;
+  }
+
+  .rich-editor-toolbar {
+    padding: 8px;
+    gap: 6px;
+  }
+
+  .rich-editor-content {
+    padding: 12px;
+    min-height: 120px;
+  }
+
+  /* 进度检查移动端卡片 */
+  .check-mobile-card-header {
+    padding: 10px 12px;
+  }
+
+  .check-mobile-weeks {
+    padding: 8px 10px;
+  }
+
+  .check-mobile-week {
+    min-width: calc(50% - 3px);
+    max-width: calc(50% - 3px);
+    padding: 8px 8px;
+  }
+
+  .check-mobile-week-date {
+    display: none;
+  }
+
+  /* 批量审核：左右分栏改成上下堆叠 */
+  .batch-review-page {
+    flex-direction: column;
+  }
+
+  .batch-review-left {
+    width: 100%;
+    min-width: 0;
+    max-height: 38vh;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .batch-review-right {
+    min-height: 0;
+  }
+
+  .br-top-bar {
+    flex-wrap: wrap;
+    min-height: 0;
+    padding: 10px 12px;
+    gap: 10px;
+  }
+
+  .br-top-right,
+  .br-top-submission {
+    width: 100%;
+  }
+
+  .br-middle {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .br-top-file-link {
+    max-width: 140px;
+  }
+
+  .br-ai-fab {
+    width: 46px;
+    height: 46px;
+    bottom: 16px;
+    right: 16px;
+  }
+
+  .br-ai-overlay {
+    flex-direction: column;
+  }
+
+  .br-ai-preview {
+    width: 100% !important;
+    max-height: 42%;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .br-ai-preview-resizer {
+    display: none;
+  }
+
+  .br-ai-preview-collapsed {
+    width: 100%;
+    height: 34px;
+    flex-direction: row;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .br-ai-preview-collapsed span {
+    writing-mode: horizontal-tb;
+    letter-spacing: 1px;
+  }
+
+  .batch-review-eval-field {
+    height: 38vh;
+    min-height: 200px;
+  }
+
+  /* 登录页 */
+  .login-page-shell {
+    padding: 20px 14px 24px;
+  }
+
+  .login-hero-visual {
+    min-height: 300px;
+  }
+
+  .hero-visual-content {
+    left: 24px;
+    bottom: 24px;
+    max-width: 240px;
+  }
+
+  .hero-visual-content h2 {
+    font-size: 26px;
+  }
+
+  .copy {
+    left: 28px;
+    top: 26px;
+  }
+
+  .copy h1 {
+    font-size: 30px;
+  }
+
+  .copy p {
+    width: min(320px, 80vw);
+    font-size: 16px;
+  }
+
+  .login-panel-attachment {
+    padding: 24px 18px 20px;
+  }
+
+  .captcha-row-attachment {
+    grid-template-columns: 1fr;
+  }
+
+  .login-extra-row {
+    gap: 10px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  /* 头部导航：隐藏冗余信息，保留操作入口 */
+  .desktop-only {
+    display: none !important;
+  }
+
+  .mobile-only {
+    display: inline-flex !important;
+  }
+
+  .user-name,
+  .user-info,
+  .theme-select {
+    display: none !important;
+  }
+
+  .user-pill {
+    height: 36px !important;
+    max-width: 120px;
+    padding: 0 10px !important;
+    gap: 4px !important;
+  }
+
+  .notification-badge {
+    width: 36px;
+    height: 36px;
+  }
+
+  .mobile-drawer .ant-drawer-content {
+    background: var(--bg-page);
+  }
+
+  .mobile-drawer .ant-drawer-header {
+    background: var(--bg-soft);
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .mobile-drawer .ant-drawer-title {
+    color: var(--text-primary);
+  }
+
+  .mobile-drawer .ant-drawer-body {
+    padding: 8px;
+  }
+
+  .mobile-menu {
+    border: none !important;
+    background: transparent !important;
+  }
+}
+
+/* ---------- 普通手机 ---------- */
+@media (max-width: 480px) {
+  .portal-header-left h3 {
+    font-size: 15px;
+  }
+
+  .ant-card-body {
+    padding: 12px !important;
+  }
+
+  .check-mobile-week {
+    min-width: 100%;
+    max-width: 100%;
+  }
+
+  .br-top-avatar {
+    width: 34px;
+    height: 34px;
+    font-size: 14px;
+  }
+
+  .br-top-student {
+    font-size: 14px;
+  }
+
+  .stat-value {
+    font-size: 20px;
+  }
+
+  .modal-title-wrap strong {
+    font-size: 15px;
+  }
+}
+
+/* ---------- 小屏手机 ---------- */
+@media (max-width: 380px) {
+  :root {
+    --content-gutter: 10px;
+  }
+
+  .portal-header-left h3 {
+    display: none;
+  }
+
+  .user-pill {
+    max-width: 76px;
+  }
+}

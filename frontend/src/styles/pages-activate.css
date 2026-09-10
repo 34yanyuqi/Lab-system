@@ -1,0 +1,46 @@
+/* ========== pages-activate：邮箱激活页 ==========
+   该页面是一张恒定的白卡（.glass-off，见 glass.css）：
+   页面外层是紫色渐变，卡片内部刻意保持浅色，所以这里的颜色是"故意写死的浅色"，
+   不要改成主题变量，否则暗色模式下会与卡片的白色底冲突。 */
+
+.code-input-container {
+  padding: 8px 0;
+}
+
+.code-input {
+  width: 56px;
+  height: 64px;
+  text-align: center;
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: #1a1a2e;
+  border: 2px solid #e8e8e8;
+  border-radius: 12px;
+  background: #ffffff;
+  outline: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.code-input:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15), 0 4px 12px rgba(99, 102, 241, 0.15);
+  transform: translateY(-2px);
+}
+
+.code-input:not(:focus):hover {
+  border-color: #d0d0d0;
+}
+
+.code-input::placeholder {
+  color: #d0d0d0;
+}
+
+@media (max-width: 480px) {
+  .code-input {
+    width: 48px;
+    height: 56px;
+    font-size: 24px;
+  }
+}

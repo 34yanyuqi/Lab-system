@@ -1,0 +1,550 @@
+/* ========== glass：毛玻璃视觉层（浅色 / 暗色统一），须最后引入 ========== */
+
+/* ======================================================================
+   毛玻璃（Glassmorphism）
+   —— 所有颜色都取自 tokens.css 里的 --glass-* 变量，因此浅色和暗色
+      共用同一套规则，不会再出现"只有浅色有玻璃、暗色是实心块"的情况。
+   —— 需要"取消玻璃"的元素加 .glass-off 类即可退出这一层。
+
+   ★ 核心原则：backdrop-filter 只加在"最外层的那一层玻璃"上 ★
+   ----------------------------------------------------------------------
+   backdrop-filter 模糊的是元素【背后】已经画好的内容，并且它会成为内部元素新的
+   backdrop root。所以一个已经有 backdrop-filter 的容器（比如 .ant-card），
+   它的子元素再写一次 backdrop-filter 并不会"更玻璃"，而是：
+
+     子元素 → 以父容器为 backdrop root 重新采样 → 采样到的基本是空背景
+            → 自己的半透明底色直接压在空背景上 → 丢掉背后所有的颜色信息
+            → 渲染成一块没有色相的平色
+
+   在浅色主题里它表现为"一条死白的平色带"（卡片正文、表头、固定列、输入框…），
+   在深色主题里表现为"一条发灰的死黑"，而同一行的其它普通单元格还透着背景渐变，
+   于是就有了"某几列是纯白实心块、和其它列很割裂"的观感。
+
+   因此本文件只给下面这些"最外层玻璃"保留 backdrop-filter：
+     · 页面骨架：body / .portal-sider / .portal-header / .portal-footer
+     · 卡片与页面级面板：.ant-card、.login-panel、.batch-review-* 等
+     · 挂在 body 上的浮层：Modal / Drawer / Dropdown / Popover / Select 下拉 / 提示
+   其余所有"长在玻璃里面的元素"一律只给半透明底色，颜色才能和父层连成一片。
+   ====================================================================== */
+
+/* ----------------------------------------------------------------------
+   1. 背景光晕
+   毛玻璃的本质是"模糊它背后的东西"，所以背后必须先有层次。
+   固定到视口（attachment: fixed），滚动时颜色不跟着跑，玻璃质感才稳定。
+   ---------------------------------------------------------------------- */
+body {
+  background-color: var(--bg-page);
+  background-image: var(--app-aurora);
+  background-attachment: fixed;
+}
+
+body::before,
+body::after {
+  content: '';
+  position: fixed;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: 50%;
+  filter: blur(2px);
+}
+
+body::before {
+  width: 360px;
+  height: 360px;
+  top: 12%;
+  right: -120px;
+  background: var(--app-blob-1);
+}
+
+body::after {
+  width: 300px;
+  height: 300px;
+  bottom: -90px;
+  left: 18%;
+  background: var(--app-blob-2);
+}
+
+/* ----------------------------------------------------------------------
+   2. 布局骨架：顶栏 / 侧边栏 / 内容区 / 页脚
+   ---------------------------------------------------------------------- */
+.portal-sider {
+  background: var(--glass-sider) !important;
+  border-right-color: var(--glass-border) !important;
+  box-shadow: 10px 0 34px rgba(71, 85, 105, 0.08);
+  backdrop-filter: saturate(var(--glass-sat)) blur(var(--glass-blur-lg));
+  -webkit-backdrop-filter: saturate(var(--glass-sat)) blur(var(--glass-blur-lg));
+}
+
+.portal-logo {
+  border-bottom-color: var(--glass-border);
+}
+
+.portal-header {
+  background: var(--glass-header) !important;
+  border-bottom-color: var(--glass-border);
+  box-shadow: 0 8px 28px rgba(71, 85, 105, 0.06);
+  backdrop-filter: saturate(200%) blur(var(--glass-blur-lg));
+  -webkit-backdrop-filter: saturate(200%) blur(var(--glass-blur-lg));
+}
+
+.portal-content {
+  background: transparent;
+}
+
+.portal-footer {
+  background: var(--glass-footer) !important;
+  border-top-color: var(--glass-border);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+}
+
+.portal-menu .ant-menu-item-selected {
+  box-shadow: 0 8px 20px var(--primary-glow), var(--glass-highlight);
+}
+
+/* ----------------------------------------------------------------------
+   2.5 退出开关
+   .glass-off = "这一块不要玻璃"。
+   例如激活页需要一张恒定的白卡（它内部用的是 #333 这类深色行内文字），
+   在暗色下如果被玻璃化成深色卡，文字就直接看不见了。
+   ---------------------------------------------------------------------- */
+.glass-off {
+  background: #ffffff !important;
+  border-color: #ffffff !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* ----------------------------------------------------------------------
+   3. 卡片与面板
+   ---------------------------------------------------------------------- */
+.ant-card:not(.glass-off),
+.compact-card,
+.tech-card,
+.login-hero-card,
+.register-hero-card {
+  background: var(--glass-surface) !important;
+  border-color: var(--glass-border) !important;
+  box-shadow: var(--glass-shadow), var(--glass-highlight) !important;
+  backdrop-filter: saturate(var(--glass-sat)) blur(var(--glass-blur));
+  -webkit-backdrop-filter: saturate(var(--glass-sat)) blur(var(--glass-blur));
+}
+
+.ant-card:not(.glass-off):hover,
+.tech-card:hover {
+  border-color: var(--primary-color) !important;
+  box-shadow: var(--glass-shadow-hover), var(--glass-highlight) !important;
+}
+
+.login-panel-attachment,
+.register-panel {
+  background: var(--glass-panel) !important;
+  backdrop-filter: saturate(var(--glass-sat)) blur(var(--glass-blur-lg));
+  -webkit-backdrop-filter: saturate(var(--glass-sat)) blur(var(--glass-blur-lg));
+}
+
+/* ----------------------------------------------------------------------
+   3.5 魔方登录页：固定深色、不参与毛玻璃
+   魔方的六个面本身就是"半透明深色 + 彩色底纹"，登录面板如果再叠一层毛玻璃：
+     · 面板颜色会被背后的彩色面带着走，和其余五个面对不上；
+     · 浅色主题下 --glass-panel 会解析成半透明白，面板里 #eef5ff 的浅色文字
+       直接糊在白底上看不清。
+   所以这里把面板恢复成 pages-login.css 里的固定深色取值，两个主题保持一致。
+   ---------------------------------------------------------------------- */
+.login-panel {
+  background: rgba(10, 14, 21, 0.86) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* 背面快捷登录面板同理，保持自己的固定深色 */
+.quick-login-panel {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* 魔方页自带全屏深色渐变，不需要背景光晕。
+   （:has() 不被支持时这条会被忽略，也无副作用：光晕本来就被 shell 盖住） */
+body:has(.cube-page-shell) {
+  background-image: none;
+}
+
+/* 常用的"小面板"容器
+   ⚠️ 这里【故意不加 backdrop-filter】。原因见文件开头"嵌套玻璃"的说明：
+   它们都长在卡片里，而卡片自己已经是一块 backdrop-filter 玻璃片。
+   在玻璃片内部再模糊一次，浏览器不会让它"更玻璃"，而是把它当成一个新的
+   backdrop root 重新采样 —— 结果是这一块丢掉背后的颜色，被洗成一块
+   没有色相的平色（浅色主题下就是死白，深色主题下就是死灰）。
+   只保留半透明底色，颜色才能和卡片连成一片。 */
+.stat-card .ant-card-body {
+  /* 卡片身体不铺底色，让卡片自己的玻璃底色原样透出来 */
+  background: transparent;
+}
+
+/* .action-tile 的底色来自 pages-dashboard.css 的 var(--bg-soft)，
+   这里不再重复定义，避免和业务样式抢优先级。 */
+.detail-box,
+.file-info {
+  background: var(--glass-panel);
+  border-color: var(--glass-border);
+}
+
+/* ----------------------------------------------------------------------
+   4. 表格：容器透明透出背景，表头/单元格各自成玻璃片
+   ---------------------------------------------------------------------- */
+.ant-table-wrapper,
+.ant-table-container,
+.ant-table-content,
+.ant-table-body,
+.ant-table,
+.ant-table-tbody {
+  background: transparent !important;
+}
+
+/* 表头 / 单元格都【只给半透明底色，不加 backdrop-filter】。
+   两个原因：
+   1) 性能：外层玻璃卡已经把背景模糊过一次，逐格再模糊等于把 GPU 开销乘以「行 × 列」；
+   2) 正确性（关键）：卡片自己是 backdrop-filter 玻璃片，它同时会成为内部元素的
+      backdrop root。在它内部再模糊一次，浏览器会把这一格当成一块新的独立玻璃重新
+      采样背景，结果是这一格丢掉背后的颜色被洗平 —— 表现就是"表头/固定列是一条
+      死白的平色带，而普通单元格还透着背景的渐变"，这正是原来的割裂感来源。 */
+.ant-table-thead > tr > th,
+.ant-table-thead > tr > th.ant-table-column-has-sorters {
+  background: var(--glass-thead) !important;
+  border-bottom-color: var(--glass-border) !important;
+  box-shadow: var(--glass-highlight);
+}
+.ant-table-tbody > tr > td {
+  background: var(--glass-tbody) !important;
+  border-bottom-color: var(--glass-border) !important;
+}
+
+.ant-table-tbody > tr:hover > td {
+  background: var(--glass-tbody-hover) !important;
+}
+
+.ant-table-tbody > tr:nth-child(even) > td {
+  background: var(--glass-tbody-stripe) !important;
+}
+
+/* 选中行：antd 的选中底色优先级低于上面那条带 !important 的 td 规则，会被整条吃掉
+   —— 表现就是"勾了复选框，整行毫无变化"。所以这里必须用同样带 !important、
+   且写在后面的规则把选中态补回来。 */
+.ant-table-tbody > tr.ant-table-row-selected > td {
+  background: var(--glass-tbody-selected) !important;
+}
+
+.ant-table-tbody > tr.ant-table-row-selected:hover > td {
+  background: var(--glass-tbody-selected-hover) !important;
+}
+
+/* 固定列（复选框 / 行号 / 图片 / 操作列）：
+   1) 背景：不要覆盖 background。antd 自己会给固定列写一条不透明的
+      `.ant-table-wrapper .ant-table-cell-fix-left/.ant-table-cell-fix-right`
+      背景色（colorBgContainer，浅色下就是纯白），必须让它被上面的
+      var(--glass-tbody) 盖住，固定列才会和相邻单元格连成一片。
+   2) 模糊：只有"这一列底下真的压着别的列"时才需要 backdrop-filter。
+      antd 在表格横向可滚动时会打上 ping 类：
+        .ant-table-ping-left  → 左侧已有列被卷走，左边固定列下面有东西
+        .ant-table-ping-right → 右侧还有列没露出来，右边固定列下面有东西
+      没有东西可糊的时候照样模糊，反而会被洗成一条发白的平色带（见上面第 2 点），
+      所以这里用 ping 类做条件，滚到哪一侧才糊哪一侧。 */
+.ant-table-ping-left .ant-table-thead > tr > th.ant-table-cell-fix-left,
+.ant-table-ping-left .ant-table-tbody > tr > td.ant-table-cell-fix-left,
+.ant-table-ping-right .ant-table-thead > tr > th.ant-table-cell-fix-right,
+.ant-table-ping-right .ant-table-tbody > tr > td.ant-table-cell-fix-right {
+  backdrop-filter: saturate(170%) blur(var(--glass-blur-sm));
+  -webkit-backdrop-filter: saturate(170%) blur(var(--glass-blur-sm));
+}
+
+.ant-table-expanded-row > td {
+  background: var(--glass-panel) !important;
+}
+
+.ant-table-ping-right .ant-table-cell-fix-right-first::after,
+.ant-table-ping-left .ant-table-cell-fix-left-last::after {
+  box-shadow: none !important;
+}
+
+.ant-table-placeholder,
+.ant-table-placeholder > td {
+  background: transparent !important;
+}
+
+/* 自定义表格（周列表 / 考勤日历）
+   注意：td 的 background 故意不加 !important —— 日历的考勤状态色、
+   被驳回周的浅红底都是行内样式，加了 !important 会把这些有意义的状态色洗掉。 */
+.twl-table thead th {
+  background: var(--glass-thead) !important;
+}
+
+.twl-table tbody td {
+  background: var(--glass-tbody);
+}
+
+/* .twl-table 也长在卡片里，同样不再叠加 backdrop-filter（理由见上面的表格说明） */
+
+/* ----------------------------------------------------------------------
+   5. 按钮：默认按钮玻璃化；主按钮保留实色，保证文字对比度
+   ---------------------------------------------------------------------- */
+/* 按钮们同样长在卡片 / 弹窗里，只给半透明底色，不再叠加 backdrop-filter
+   （叠加会被洗成一块没有色相的平色，见表格那一段的说明）。 */
+.ant-btn:not(.ant-btn-primary):not(.ant-btn-link):not(.ant-btn-text):not(.ant-btn-dangerous):not(:disabled) {
+  background: var(--glass-btn) !important;
+  border-color: var(--glass-border-strong) !important;
+}
+
+.ant-btn:not(.ant-btn-primary):not(.ant-btn-link):not(.ant-btn-text):not(.ant-btn-dangerous):hover:not(:disabled) {
+  background: var(--glass-btn-hover) !important;
+  border-color: var(--primary-color) !important;
+}
+
+.ant-btn:not(.ant-btn-primary):not(.ant-btn-link):not(.ant-btn-text):not(.ant-btn-dangerous):active:not(:disabled) {
+  background: var(--glass-btn-active) !important;
+}
+
+/* 主按钮：实色 + 顶部高光，做出"玻璃压边"的质感 */
+.ant-btn-primary:not(:disabled) {
+  box-shadow: 0 6px 18px var(--primary-glow), inset 0 1px 0 rgba(255, 255, 255, 0.28) !important;
+}
+
+/* 表格 / 通知里的图标小按钮 */
+.action-btn,
+.delete-btn,
+.mark-read-btn {
+  background: var(--glass-btn);
+}
+
+.action-btn:hover,
+.delete-btn:hover {
+  background: var(--glass-btn-hover);
+}
+
+/* 顶栏的圆形按钮与胶囊：顶栏自己已经是玻璃片，这里同样不再叠加模糊 */
+.portal-header .ant-btn-circle,
+.notification-badge,
+.user-pill,
+.header-clock {
+  background: var(--glass-btn) !important;
+  border-color: var(--glass-border-strong) !important;
+  box-shadow: var(--glass-highlight) !important;
+}
+
+.notification-badge:hover,
+.user-pill:hover {
+  background: var(--glass-btn-hover) !important;
+}
+
+/* ----------------------------------------------------------------------
+   6. 输入类控件
+   ---------------------------------------------------------------------- */
+.ant-input,
+.ant-input-affix-wrapper,
+.ant-input-number,
+.ant-input-number-group-addon,
+.ant-picker,
+.ant-select .ant-select-selector,
+.ant-input-search .ant-input-group-addon {
+  background: var(--glass-input) !important;
+  border-color: var(--glass-border-strong) !important;
+}
+
+.ant-input:hover,
+.ant-input-affix-wrapper:hover,
+.ant-input-number:hover,
+.ant-picker:hover,
+.ant-select:not(.ant-select-disabled):hover .ant-select-selector {
+  background: var(--glass-input-hover) !important;
+  border-color: var(--primary-color) !important;
+}
+
+.ant-input-affix-wrapper > .ant-input,
+.ant-input-affix-wrapper input.ant-input {
+  background: transparent !important;
+}
+
+.ant-select-dropdown,
+.ant-picker-panel-container {
+  background: var(--glass-float) !important;
+  backdrop-filter: saturate(var(--glass-sat)) blur(var(--glass-blur-lg));
+  -webkit-backdrop-filter: saturate(var(--glass-sat)) blur(var(--glass-blur-lg));
+}
+
+/* ----------------------------------------------------------------------
+   7. 勾选类控件
+   ---------------------------------------------------------------------- */
+.ant-checkbox-inner,
+.ant-radio-inner {
+  background-color: var(--glass-input) !important;
+  border-color: var(--glass-border-strong) !important;
+}
+
+.ant-checkbox-checked:not(.ant-checkbox-disabled) .ant-checkbox-inner,
+.ant-radio-checked:not(.ant-radio-disabled) .ant-radio-inner {
+  background-color: var(--primary-color) !important;
+  border-color: var(--primary-color) !important;
+}
+
+/* ----------------------------------------------------------------------
+   8. 浮层：下拉 / 气泡 / 弹窗 / 抽屉 / 消息
+   ---------------------------------------------------------------------- */
+.ant-dropdown-menu,
+.ant-popover-inner,
+.ant-modal-content,
+.ant-drawer-content,
+.ant-menu-submenu-popup,
+.ant-message-notice-content,
+.ant-notification-notice {
+  background: var(--glass-float) !important;
+  border-color: var(--glass-border) !important;
+  backdrop-filter: saturate(var(--glass-sat)) blur(var(--glass-blur-lg));
+  -webkit-backdrop-filter: saturate(var(--glass-sat)) blur(var(--glass-blur-lg));
+}
+
+/* .ant-alert / .ant-tag 出现在卡片里，模糊会被洗平，所以不加；
+   .ant-tooltip 是挂在 body 上的浮层，背景里没有别的玻璃片，可以保留模糊。 */
+.ant-tooltip-inner {
+  backdrop-filter: saturate(150%) blur(var(--glass-blur-xs));
+  -webkit-backdrop-filter: saturate(150%) blur(var(--glass-blur-xs));
+}
+
+.ant-modal-header,
+.ant-drawer-header {
+  background: transparent !important;
+}
+
+/* ----------------------------------------------------------------------
+   9. 自定义面板
+   ---------------------------------------------------------------------- */
+/* .check-mobile-card 也长在任务卡片里，同样只给半透明底色（理由见文件开头） */
+.check-mobile-card {
+  background: var(--glass-panel) !important;
+}
+
+.check-mobile-week {
+  background: var(--glass-btn);
+}
+
+.batch-review-page,
+.batch-review-right {
+  background: transparent !important;
+}
+
+.batch-review-left {
+  background: var(--glass-surface) !important;
+  border-right-color: var(--glass-border) !important;
+  backdrop-filter: saturate(var(--glass-sat)) blur(var(--glass-blur));
+  -webkit-backdrop-filter: saturate(var(--glass-sat)) blur(var(--glass-blur));
+}
+
+.br-left-header,
+.br-content-card,
+.br-top-bar,
+.br-pdf-header {
+  background: var(--glass-panel) !important;
+  border-color: var(--glass-border) !important;
+  backdrop-filter: saturate(var(--glass-sat)) blur(var(--glass-blur));
+  -webkit-backdrop-filter: saturate(var(--glass-sat)) blur(var(--glass-blur));
+}
+
+.batch-review-tree .ant-tree-node-content-wrapper:hover,
+.br-file-card:hover {
+  background: var(--glass-btn-hover);
+}
+
+.br-ai-preview,
+.br-ai-preview-header {
+  background: var(--glass-panel) !important;
+  border-color: var(--glass-border) !important;
+  backdrop-filter: saturate(var(--glass-sat)) blur(var(--glass-blur-sm));
+  -webkit-backdrop-filter: saturate(var(--glass-sat)) blur(var(--glass-blur-sm));
+}
+
+.notification-popover .ant-popover-inner {
+  background: var(--glass-float) !important;
+}
+
+.notification-item:hover {
+  background: var(--glass-btn);
+}
+
+.mobile-drawer .ant-drawer-content {
+  background: var(--glass-float) !important;
+}
+
+.mobile-drawer .ant-drawer-header {
+  background: var(--glass-panel) !important;
+}
+
+.ai-chat-panel,
+.ai-chat-header,
+.ai-chat-input-area {
+  background: transparent;
+}
+
+/* ----------------------------------------------------------------------
+   10. 把常用 token 也改成半透明，让"用了 token 的面板"自动带上玻璃感
+   ---------------------------------------------------------------------- */
+:root,
+[data-theme="dark"] {
+  --bg-soft: rgba(21, 29, 39, 0.6);
+  --bg-card: rgba(19, 26, 35, 0.6);
+  --bg-elevated: rgba(26, 35, 48, 0.72);
+  --input-bg: rgba(148, 163, 184, 0.1);
+}
+
+[data-theme="light"] {
+  --bg-soft: rgba(248, 250, 252, 0.54);
+  --bg-card: rgba(255, 255, 255, 0.48);
+  --bg-elevated: rgba(255, 255, 255, 0.44);
+  --input-bg: rgba(255, 255, 255, 0.5);
+}
+
+/* ----------------------------------------------------------------------
+   11. 兜底：不支持 backdrop-filter 时退回不透明背景，保证可读性
+   ---------------------------------------------------------------------- */
+@supports not ((backdrop-filter: blur(4px)) or (-webkit-backdrop-filter: blur(4px))) {
+  :root,
+  [data-theme="dark"] {
+    --bg-soft: #151d27;
+    --bg-card: #131a23;
+    --bg-elevated: #1a2330;
+    --input-bg: #101823;
+  }
+
+  [data-theme="light"] {
+    --bg-soft: #f8fafc;
+    --bg-card: #ffffff;
+    --bg-elevated: #ffffff;
+    --input-bg: #ffffff;
+  }
+
+  body {
+    background-image: none;
+  }
+
+  .portal-sider {
+    background: var(--sider-bg) !important;
+  }
+
+  .portal-header {
+    background: var(--header-bg) !important;
+  }
+
+  .ant-card:not(.glass-off),
+  .ant-table-thead > tr > th,
+  .ant-table-tbody > tr > td,
+  .ant-input,
+  .ant-select .ant-select-selector,
+  .ant-btn:not(.ant-btn-primary):not(.ant-btn-link):not(.ant-btn-text) {
+    background: var(--bg-card) !important;
+  }
+}
+
+/* ---------- 触屏设备：去掉 hover 位移带来的"粘滞"效果 ---------- */
+@media (hover: none) {
+  .ant-btn:not(:disabled):not(.ant-btn-link):not(.ant-btn-text):hover,
+  .action-tile:hover {
+    transform: none;
+  }
+}

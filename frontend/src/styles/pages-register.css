@@ -1,0 +1,257 @@
+/* ========== pages-register：学生注册页 ========== */
+/* ==========================================================================
+   9. 学生注册页
+   —— 该页面原先只有类名没有样式（.register-* 在 CSS 中完全缺失），
+      这里补齐一套与登录页呼应的「左视觉 + 右表单」布局，并跟随主题。
+   ========================================================================== */
+
+.register-page-shell {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 24px;
+  background:
+    radial-gradient(ellipse at 12% 8%, rgba(37, 99, 235, 0.12) 0%, transparent 55%),
+    radial-gradient(ellipse at 88% 92%, rgba(99, 102, 241, 0.12) 0%, transparent 55%),
+    linear-gradient(135deg, #eef4ff 0%, #e6ecff 100%);
+}
+
+[data-theme="dark"] .register-page-shell {
+  background:
+    radial-gradient(ellipse at 12% 8%, rgba(0, 212, 255, 0.12) 0%, transparent 55%),
+    radial-gradient(ellipse at 88% 92%, rgba(99, 102, 241, 0.14) 0%, transparent 55%),
+    linear-gradient(135deg, #0a1424 0%, #0b1a2e 100%);
+}
+
+.register-hero-card {
+  width: min(100%, 1080px);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: stretch;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-lg);
+}
+
+/* ---------- 左侧视觉 ---------- */
+.register-hero-visual {
+  position: relative;
+  min-height: 520px;
+  overflow: hidden;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(140deg, #4f8cff 0%, #3f5fe0 55%, #2b3fae 100%);
+  background-size: 56px 56px, 56px 56px, auto;
+}
+
+.register-orbit {
+  position: absolute;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 50%;
+}
+
+.register-orbit.orbit-a {
+  width: 320px;
+  height: 320px;
+  left: 50%;
+  top: 46%;
+  transform: translate(-50%, -50%);
+  animation: registerSpin 26s linear infinite;
+}
+
+.register-orbit.orbit-b {
+  width: 210px;
+  height: 210px;
+  left: 50%;
+  top: 46%;
+  transform: translate(-50%, -50%);
+  border-style: dashed;
+  animation: registerSpin 18s linear infinite reverse;
+}
+
+@keyframes registerSpin {
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+.register-building {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  width: 132px;
+  height: 168px;
+  transform: translate(-50%, -50%);
+  border-radius: 14px;
+  background:
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.22) 0 2px, transparent 2px 26px),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.22) 0 2px, transparent 2px 26px),
+    rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 0 18px 48px rgba(9, 20, 52, 0.4);
+  backdrop-filter: blur(2px);
+}
+
+.register-glow {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  width: 260px;
+  height: 260px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.5) 0%, rgba(120, 200, 255, 0.18) 45%, transparent 70%);
+  filter: blur(6px);
+  pointer-events: none;
+}
+
+.register-visual-content {
+  position: absolute;
+  left: 36px;
+  right: 36px;
+  bottom: 40px;
+  color: #fff;
+}
+
+.register-visual-content h2 {
+  margin: 0 0 8px;
+  font-size: 26px;
+  line-height: 1.3;
+  font-weight: 700;
+}
+
+.register-visual-content p {
+  margin: 0;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+/* ---------- 右侧表单 ---------- */
+.register-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 36px 40px;
+  background: var(--bg-card);
+}
+
+.register-title-group {
+  margin-bottom: 20px;
+}
+
+.register-title-group h1 {
+  margin: 0 0 4px;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.register-title-group p {
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+}
+
+.register-form .ant-form-item {
+  margin-bottom: 14px;
+}
+
+.register-form .ant-form-item-label {
+  padding-bottom: 4px !important;
+}
+
+.register-form .ant-form-item-label > label {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.register-panel .login-register-tip {
+  margin-top: 18px;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.register-panel .attachment-login-button {
+  height: 46px;
+  font-weight: 600;
+  letter-spacing: 4px;
+}
+
+@media (max-width: 1100px) {
+  .register-hero-card {
+    grid-template-columns: 1fr;
+    max-width: 520px;
+  }
+
+  .register-hero-visual {
+    min-height: 180px;
+  }
+
+  .register-visual-content {
+    left: 24px;
+    right: 24px;
+    bottom: 22px;
+  }
+
+  .register-visual-content h2 {
+    font-size: 20px;
+  }
+
+  .register-orbit.orbit-a {
+    width: 200px;
+    height: 200px;
+  }
+
+  .register-orbit.orbit-b {
+    width: 130px;
+    height: 130px;
+  }
+
+  .register-building {
+    width: 72px;
+    height: 92px;
+  }
+
+  .register-glow {
+    width: 150px;
+    height: 150px;
+  }
+}
+
+@media (max-width: 768px) {
+  .register-page-shell {
+    padding: 16px 12px;
+    align-items: flex-start;
+  }
+
+  .register-panel {
+    padding: 22px 18px 26px;
+  }
+
+  .register-hero-visual {
+    min-height: 140px;
+  }
+
+  .register-title-group h1 {
+    font-size: 21px;
+  }
+
+  .register-form .ant-form-item {
+    margin-bottom: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .register-panel {
+    padding: 18px 14px 22px;
+  }
+
+  .register-hero-visual {
+    min-height: 120px;
+  }
+}

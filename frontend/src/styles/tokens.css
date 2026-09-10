@@ -1,0 +1,283 @@
+/* ========== tokens：主题变量（CSS 变量与主题定义） ========== */
+
+/* ==========================================================================
+   1. 设计令牌（Design Tokens）
+   —— 所有颜色都集中在两个主题块里，组件样式只引用变量，
+      这样暗色/浅色模式的对比度问题只需要在一个地方修。
+   ========================================================================== */
+
+:root {
+  /* 布局尺寸 */
+  --header-height: 60px;
+  --sider-width: 240px;
+  --sider-width-collapsed: 84px;
+  --content-gutter: 24px;
+
+  /* 圆角 */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --radius-pill: 999px;
+
+  /* 间距 */
+  --padding-sm: 10px;
+  --padding-md: 16px;
+  --padding-lg: 24px;
+
+  /* 动效 */
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ---------- 暗色主题（默认） ---------- */
+:root,
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* 背景层次：page < card < soft < elevated */
+  --bg-page: #0b1017;
+  --bg-card: #131a23;
+  --bg-card-gradient: linear-gradient(135deg, #141c26 0%, #1a2330 100%);
+  --bg-soft: #151d27;
+  --bg-elevated: #1a2330;
+  --bg-hover: rgba(148, 163, 184, 0.1);
+  --bg-active: rgba(148, 163, 184, 0.16);
+  --input-bg: #101823;
+  /* 兼容旧变量名 */
+  --bg-primary: #131a23;
+  --background-color: #0b1017;
+
+  /* 边框 */
+  --border-color: rgba(148, 163, 184, 0.2);
+  --border-strong: rgba(148, 163, 184, 0.36);
+  --border-light: rgba(148, 163, 184, 0.1);
+
+  /* 文本：在 #131a23 卡片上分别约为 15:1 / 7.5:1 / 4.6:1，满足 WCAG AA */
+  --text-primary: #e9eef6;
+  --text-secondary: #a7b4c6;
+  --text-tertiary: #7f8da1;
+  --text-inverse: #06121a;
+
+  /* 主色 */
+  --primary: #00d4ff;
+  --primary-color: #00d4ff;
+  --primary-hover: #5ce1ff;
+  --primary-dark: #0b7f9e;
+  --primary-soft: rgba(0, 212, 255, 0.12);
+  --primary-glow: rgba(0, 212, 255, 0.26);
+  --focus-ring: 0 0 0 3px rgba(0, 212, 255, 0.3);
+
+  /* 语义色（同时提供浅色底，避免手写 rgba） */
+  --success-color: #4ade80;
+  --success-soft: rgba(74, 222, 128, 0.14);
+  --warning-color: #fbbf24;
+  --warning-soft: rgba(251, 191, 36, 0.14);
+  --error-color: #ff7875;
+  --error-soft: rgba(255, 120, 117, 0.14);
+  --pending-color: #9aa7b8;
+
+  /* 侧边栏选中态：亮青底 + 深色字，对比度 ~11:1 */
+  --menu-selected-bg: linear-gradient(135deg, #2fd6f5 0%, #0ea5e9 100%);
+  --menu-selected-color: #04141c;
+
+  /* 布局 */
+  --sider-bg: linear-gradient(180deg, #0e151e 0%, #0b1017 100%);
+  --sider-border: rgba(148, 163, 184, 0.14);
+  --header-bg: rgba(13, 20, 29, 0.82);
+  --header-border: rgba(148, 163, 184, 0.14);
+  --mask-bg: rgba(3, 7, 12, 0.72);
+
+  /* 表格 */
+  --table-header-bg: rgba(148, 163, 184, 0.08);
+  --table-hover-bg: rgba(0, 212, 255, 0.07);
+  --table-border: rgba(148, 163, 184, 0.22);
+  --table-cell-border: rgba(148, 163, 184, 0.12);
+  --current-week-bg: rgba(0, 212, 255, 0.1);
+
+  /* 杂项 */
+  --tag-primary-bg: rgba(0, 212, 255, 0.14);
+  --tag-primary-color: #4fdcff;
+  --icon-submitted: #00d4ff;
+  --icon-unsubmitted: #64748b;
+  --task-title-bg: rgba(0, 212, 255, 0.1);
+  --task-title-border: rgba(0, 212, 255, 0.22);
+
+  /* 阴影 */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 18px 48px rgba(0, 0, 0, 0.55);
+  --shadow-glow: 0 0 0 1px rgba(0, 212, 255, 0.07), 0 8px 24px rgba(0, 0, 0, 0.32);
+
+  /* 滚动条 */
+  --scrollbar-thumb: rgba(148, 163, 184, 0.3);
+  --scrollbar-thumb-hover: rgba(148, 163, 184, 0.5);
+
+  /* 代码块 */
+  --code-bg: #0a0f16;
+  --code-fg: #dbe6f3;
+
+  /* ---------- 毛玻璃（Glassmorphism） ----------
+     --app-aurora 是"被模糊的那层背景"。毛玻璃必须有东西可模糊，
+     否则 backdrop-filter 完全看不出来。 */
+  --app-aurora:
+    radial-gradient(circle at 12% 0%, rgba(0, 212, 255, 0.16), transparent 30rem),
+    radial-gradient(circle at 58% 6%, rgba(99, 102, 241, 0.22), transparent 34rem),
+    radial-gradient(circle at 88% 28%, rgba(14, 165, 233, 0.14), transparent 28rem),
+    radial-gradient(circle at 20% 86%, rgba(16, 185, 129, 0.10), transparent 26rem),
+    radial-gradient(circle at 94% 78%, rgba(59, 130, 246, 0.16), transparent 30rem),
+    linear-gradient(160deg, #0b1017 0%, #0c1420 45%, #0a0f16 100%);
+  --app-blob-1: rgba(0, 212, 255, 0.10);
+  --app-blob-2: rgba(129, 140, 248, 0.10);
+
+  --glass-blur-xs: 10px;
+  --glass-blur-sm: 14px;
+  --glass-blur: 18px;
+  --glass-blur-lg: 22px;
+  --glass-sat: 170%;
+
+  --glass-sider: rgba(14, 21, 30, 0.6);
+  --glass-header: rgba(13, 20, 29, 0.6);
+  --glass-footer: rgba(21, 29, 39, 0.38);
+  --glass-surface: rgba(19, 26, 35, 0.6);
+  --glass-surface-hover: rgba(26, 35, 48, 0.76);
+  --glass-panel: rgba(21, 29, 39, 0.56);
+  --glass-float: rgba(21, 29, 39, 0.82);
+  --glass-input: rgba(148, 163, 184, 0.1);
+  --glass-input-hover: rgba(148, 163, 184, 0.16);
+  --glass-btn: rgba(148, 163, 184, 0.1);
+  --glass-btn-hover: rgba(148, 163, 184, 0.18);
+  --glass-btn-active: rgba(148, 163, 184, 0.24);
+  --glass-thead: rgba(148, 163, 184, 0.09);
+  --glass-tbody: rgba(255, 255, 255, 0.022);
+  --glass-tbody-hover: rgba(0, 212, 255, 0.08);
+  --glass-tbody-stripe: rgba(255, 255, 255, 0.035);
+  --glass-tbody-selected: rgba(0, 212, 255, 0.13);
+  --glass-tbody-selected-hover: rgba(0, 212, 255, 0.2);
+  --glass-border: rgba(148, 163, 184, 0.24);
+  --glass-border-strong: rgba(148, 163, 184, 0.34);
+  --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  --glass-shadow: 0 10px 30px rgba(0, 0, 0, 0.34);
+  --glass-shadow-hover: 0 16px 40px rgba(0, 212, 255, 0.12);
+}
+
+/* ---------- 浅色主题 ---------- */
+[data-theme="light"] {
+  color-scheme: light;
+
+  --bg-page: #f4f6fa;
+  --bg-card: #ffffff;
+  --bg-card-gradient: linear-gradient(135deg, #ffffff 0%, #fbfcff 100%);
+  --bg-soft: #f8fafc;
+  --bg-elevated: #ffffff;
+  --bg-hover: rgba(15, 23, 42, 0.05);
+  --bg-active: rgba(15, 23, 42, 0.09);
+  --input-bg: #ffffff;
+  --bg-primary: #ffffff;
+  --background-color: #f4f6fa;
+
+  --border-color: #e4e9f2;
+  --border-strong: #cbd5e1;
+  --border-light: #eef2f7;
+
+  /* 文本：在白卡片上约 14:1 / 5.9:1 / 5.6:1，在页面底色上也都 >= 4.5:1 */
+  --text-primary: #1f2937;
+  --text-secondary: #556074;
+  --text-tertiary: #5f6b7f;
+  --text-inverse: #ffffff;
+
+  --primary: #2563eb;
+  --primary-color: #2563eb;
+  --primary-hover: #1d4ed8;
+  --primary-dark: #1e40af;
+  --primary-soft: #eef4ff;
+  --primary-glow: rgba(37, 99, 235, 0.18);
+  --focus-ring: 0 0 0 3px rgba(37, 99, 235, 0.22);
+
+  --success-color: #067647;
+  --success-soft: #e8f7ee;
+  --warning-color: #b45309;
+  --warning-soft: #fff5e6;
+  --error-color: #d92d20;
+  --error-soft: #fef3f2;
+  --pending-color: #667085;
+
+  --menu-selected-bg: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  --menu-selected-color: #ffffff;
+
+  --sider-bg: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  --sider-border: #e4e9f2;
+  --header-bg: rgba(255, 255, 255, 0.82);
+  --header-border: #e4e9f2;
+  --mask-bg: rgba(15, 23, 42, 0.45);
+
+  --table-header-bg: #f6f8fc;
+  --table-hover-bg: #f2f6ff;
+  --table-border: #e4e9f2;
+  --table-cell-border: #eef2f7;
+  --current-week-bg: #eefbf3;
+
+  --tag-primary-bg: #e0e9ff;
+  --tag-primary-color: #1d4ed8;
+  --icon-submitted: #2563eb;
+  --icon-unsubmitted: #cbd5e1;
+  --task-title-bg: #f2f5fa;
+  --task-title-border: #e4e9f2;
+
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 18px 48px rgba(15, 23, 42, 0.12);
+  --shadow-glow: 0 0 0 1px rgba(15, 23, 42, 0.03), 0 4px 16px rgba(15, 23, 42, 0.06);
+
+  --scrollbar-thumb: rgba(100, 116, 139, 0.32);
+  --scrollbar-thumb-hover: rgba(100, 116, 139, 0.5);
+
+  --code-bg: #0f172a;
+  --code-fg: #e2e8f0;
+
+  /* ---------- 毛玻璃（Glassmorphism） ---------- */
+  --app-aurora:
+    radial-gradient(circle at 12% 0%, rgba(96, 165, 250, 0.30), transparent 30rem),
+    radial-gradient(circle at 58% 6%, rgba(129, 140, 248, 0.24), transparent 34rem),
+    radial-gradient(circle at 88% 28%, rgba(34, 211, 238, 0.16), transparent 28rem),
+    radial-gradient(circle at 20% 86%, rgba(249, 115, 22, 0.12), transparent 26rem),
+    radial-gradient(circle at 94% 78%, rgba(37, 99, 235, 0.18), transparent 30rem),
+    linear-gradient(160deg, #f2f6ff 0%, #e7edfb 42%, #dfe8f7 100%);
+  --app-blob-1: rgba(147, 197, 253, 0.18);
+  --app-blob-2: rgba(196, 181, 253, 0.14);
+
+  --glass-blur-xs: 10px;
+  --glass-blur-sm: 14px;
+  --glass-blur: 18px;
+  --glass-blur-lg: 22px;
+  --glass-sat: 170%;
+
+  /* 浅色主题的不透明度整体比暗色低一档：
+     页面底色本身已经很亮，如果玻璃层再压 0.6 的白，卡片/单元格就会和底色
+     糊成一片纯白，"毛玻璃"直接看不出来。留出更多透明度，背后的光晕才透得出来。 */
+  --glass-sider: rgba(255, 255, 255, 0.44);
+  --glass-header: rgba(255, 255, 255, 0.44);
+  --glass-footer: rgba(255, 255, 255, 0.3);
+  --glass-surface: rgba(255, 255, 255, 0.52);
+  --glass-surface-hover: rgba(255, 255, 255, 0.72);
+  --glass-panel: rgba(255, 255, 255, 0.48);
+  --glass-float: rgba(255, 255, 255, 0.72);
+  --glass-input: rgba(255, 255, 255, 0.5);
+  --glass-input-hover: rgba(255, 255, 255, 0.82);
+  --glass-btn: rgba(255, 255, 255, 0.4);
+  --glass-btn-hover: rgba(255, 255, 255, 0.7);
+  --glass-btn-active: rgba(255, 255, 255, 0.85);
+  --glass-thead: rgba(255, 255, 255, 0.34);
+  --glass-tbody: rgba(255, 255, 255, 0.26);
+  --glass-tbody-hover: rgba(255, 255, 255, 0.55);
+  --glass-tbody-stripe: rgba(255, 255, 255, 0.33);
+  --glass-tbody-selected: rgba(37, 99, 235, 0.13);
+  --glass-tbody-selected-hover: rgba(37, 99, 235, 0.19);
+  --glass-border: rgba(148, 163, 184, 0.25);
+  --glass-border-strong: rgba(148, 163, 184, 0.32);
+  --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.82);
+  --glass-shadow: 0 10px 30px rgba(71, 85, 105, 0.07);
+  --glass-shadow-hover: 0 16px 36px rgba(37, 99, 235, 0.1);
+}

@@ -1,0 +1,22 @@
+import api from './axios'
+export default api
+export { authApi } from './auth'
+export { taskApi } from './task'
+export { submissionApi } from './submission'
+export { userApi } from './user'
+export { equipmentApi } from './equipment'
+export { notificationApi } from './notification'
+export { dataManageApi } from './dataManage'
+export { captchaApi } from './captcha'
+export { attendanceApi } from './attendance'
+export * as aiApi from './ai'
+
+
+export type { LoginPayload, RegisterPayload } from './auth'
+export type { Task } from './task'
+export type { Submission } from './submission'
+export type { User } from '@/types'
+export type { Equipment } from './equipment'
+export type { Notification } from './notification'
+export type { TableConfig, ParsedExcel, ImportResult, ImportPreviewResult, ImportPayload } from './dataManage'
+export type { CaptchaResponse } from './captcha'
