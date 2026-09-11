@@ -5,7 +5,10 @@ import { UserOutlined, LockOutlined, IdcardOutlined, MailOutlined, SafetyOutline
 import { useAuth, useMajorList } from '@/contexts'
 import { gradeOptions } from '@/config'
 import api from '@/api'
+/* 
+已经废弃
 
+*/
 export default function RegisterPage() {
   const navigate = useNavigate()
   const { register } = useAuth()

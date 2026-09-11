@@ -5,7 +5,9 @@ import { useAuth, useMajorList } from '@/contexts'
 import api from '@/api'
 import { gradeOptions } from '@/config'
 import type { EquipmentItem, User } from '@/types'
-
+/* 
+AI写的屎山看不懂
+*/
 const { Text } = Typography
 
 export default function ProfilePage() {

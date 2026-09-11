@@ -3,7 +3,9 @@ import { Link, useNavigate } from 'react-router-dom'
 import { message } from 'antd'
 import { useAuth } from '@/contexts'
 import api from '@/api'
-
+/* 
+DJ要求的魔方
+*/
 export default function LoginPage() {
   const navigate = useNavigate()
   const { login, pinLogin } = useAuth()

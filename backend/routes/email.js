@@ -11,7 +11,7 @@ const router = express.Router();
 // 验证码邮件发送限流，避免被当作邮件轰炸工具
 const codeLimiter = createRateLimiter({ windowMs: 10 * 60 * 1000, max: 10, message: '验证码发送过于频繁，请稍后再试' });
 
-const ALLOWED_CODE_TYPES = ['change_email', 'change_password', 'bind_email'];
+const ALLOWED_CODE_TYPES = ['change_email', 'change_password', 'bind_email', 'set_pin'];
 
 function validateEmailParam(email) {
   if (!email) return '请提供邮箱地址';
@@ -41,6 +41,16 @@ router.post('/send-verification', codeLimiter, authMiddleware, async (req, res) 
     
     if (type === 'change_email' && currentEmail && email !== currentEmail) {
       return res.status(400).json({ error: '只能向当前绑定的邮箱发送验证码' });
+    }
+
+    // 颜色码(PIN)验证码校验时以用户当前绑定邮箱为准，因此只允许发往该邮箱
+    if (type === 'set_pin') {
+      if (!currentEmail) {
+        return res.status(400).json({ error: '请先绑定邮箱' });
+      }
+      if (email !== currentEmail) {
+        return res.status(400).json({ error: '只能向当前绑定的邮箱发送验证码' });
+      }
     }
 
     const result = await sendVerificationCode(email, req.user.id, type);

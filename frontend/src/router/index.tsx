@@ -27,7 +27,10 @@ import StudentAttendancePage from '@/pages/student/AttendancePage'
 import StudentAttendanceManagePage from '@/pages/student/AttendanceManagePage'
 import StudentAttendanceDetailPage from '@/pages/student/AttendanceDetailPage'
 
-
+/* 
+路由
+根据角色不同选择不同的路由
+*/
 export default function Router() {
   return (
     <Routes>

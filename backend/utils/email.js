@@ -85,7 +85,13 @@ async function sendVerificationCode(email, userId, type = 'change_email') {
   
   await upsertEmailCode(email, code, userId, type, expiresAt);
 
-  const subject = type === 'change_email' ? '邮箱更换验证码' : '邮箱验证码';
+  const CODE_TYPE_SUBJECTS = {
+    change_email: '邮箱更换验证码',
+    change_password: '密码修改验证码',
+    bind_email: '邮箱绑定验证码',
+    set_pin: '颜色码设置验证码'
+  };
+  const subject = CODE_TYPE_SUBJECTS[type] || '邮箱验证码';
   const html = `
     <div style="max-width: 600px; margin: 0 auto; padding: 20px; font-family: Arial, sans-serif;">
       <h2>${subject}</h2>
