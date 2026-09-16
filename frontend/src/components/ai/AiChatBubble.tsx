@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo, memo } from 'react'
 import { CopyOutlined, CheckOutlined, FormOutlined } from '@ant-design/icons'
 import type { AiChatMessage } from '@/types'
 import { formatSimpleMarkdown } from '@/utils/markdown'
@@ -9,10 +9,16 @@ interface AiChatBubbleProps {
   onImportEvaluation?: (content: string) => void
 }
 
-export default function AiChatBubble({ message, onImportEvaluation }: AiChatBubbleProps) {
+function AiChatBubbleBase({ message, onImportEvaluation }: AiChatBubbleProps) {
   const [copied, setCopied] = useState(false)
   const isUser = message.role === 'user'
   const hasContent = message.content.trim().length > 0
+
+  // 流式回答每来一个 token 都会重渲染一次，Markdown 转换结果必须缓存
+  const renderedHtml = useMemo(
+    () => (isUser ? '' : formatSimpleMarkdown(message.content)),
+    [isUser, message.content]
+  )
 
   const handleCopy = useCallback(() => {
     navigator.clipboard.writeText(message.content).then(() => {
@@ -32,7 +38,7 @@ export default function AiChatBubble({ message, onImportEvaluation }: AiChatBubb
     return (
       <div
         className="ai-bubble-markdown"
-        dangerouslySetInnerHTML={{ __html: formatSimpleMarkdown(message.content) }}
+        dangerouslySetInnerHTML={{ __html: renderedHtml }}
       />
     )
   }
@@ -70,3 +76,8 @@ export default function AiChatBubble({ message, onImportEvaluation }: AiChatBubb
     </div>
   )
 }
+
+/**
+ * 消息列表里的历史气泡内容不会变，memo 后流式输出时只有最新那条会重渲染。
+ */
+export default memo(AiChatBubbleBase)

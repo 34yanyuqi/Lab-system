@@ -23,6 +23,21 @@ import RichTextEditor from '@/components/common/RichTextEditor'
 import { AiChatPanel } from '@/components/ai'
 import type { TaskItem, SubmissionItem, StudentItem } from '@/types'
 
+/** 附件预览栏最小宽度 / 右侧聊天区最小保留宽度 */
+const PREVIEW_MIN_PX = 280
+const CHAT_MIN_PX = 320
+
+/** 分隔条拖动会话，只存在于拖动期间：用 ref 承载，避免每帧 setState */
+interface PreviewDragState {
+  pointerId: number
+  startX: number
+  startPx: number
+  containerWidth: number
+  maxPx: number
+  pendingPx: number
+  rafId: number
+}
+
 export default function TeacherBatchReviewPage() {
   const [tasks, setTasks] = useState<TaskItem[]>([])
   const [submissions, setSubmissions] = useState<SubmissionItem[]>([])
@@ -46,6 +61,8 @@ export default function TeacherBatchReviewPage() {
     () => typeof window !== 'undefined' && window.innerWidth < 1100
   )
   const aiOverlayRef = useRef<HTMLDivElement | null>(null)
+  const aiPreviewRef = useRef<HTMLDivElement | null>(null)
+  const previewDragRef = useRef<PreviewDragState | null>(null)
   const [previewResizing, setPreviewResizing] = useState(false)
 
   // initialContent 用于「导入导师评价」时携带 AI 回复内容
@@ -273,7 +290,14 @@ export default function TeacherBatchReviewPage() {
     setPreviewError(null)
     setPdfFullscreen(false)
     setShowAiPanel(false)
+    setPreviewResizing(false)
   }, [selectedSubmission])
+
+  // 面板卸载时恢复被拖动改写的全局样式，避免光标/选区被永久锁住
+  useEffect(() => () => {
+    document.body.style.cursor = ''
+    document.body.style.userSelect = ''
+  }, [])
 
   /**
    * 导入 AI 导师评价：
@@ -340,7 +364,20 @@ export default function TeacherBatchReviewPage() {
     return getSubmissionFileMeta(selectedSubmission)
   }, [selectedSubmission])
 
-  const handlePreview = async (url: string) => {
+  // 富文本清洗要跑一次 DOMParser + 全量 DOM 遍历，缓存起来避免每次渲染都重算
+  const submitContentHtml = useMemo(
+    () => formatRichTextForDisplay(selectedSubmission?.submit_content),
+    [selectedSubmission]
+  )
+
+  const handleOpenAiPanel = useCallback(() => {
+    setPreviewResizing(false)
+    setShowAiPanel(true)
+  }, [])
+
+  const handleCloseAiPanel = useCallback(() => setShowAiPanel(false), [])
+
+  const handlePreview = useCallback(async (url: string) => {
     setPreviewUrl(url)
     setDocxPreviewHtml(null)
     setPreviewError(null)
@@ -356,9 +393,9 @@ export default function TeacherBatchReviewPage() {
         setPreviewLoading(false)
       }
     }
-  }
+  }, [])
 
-  const handleDownload = (url: string) => {
+  const handleDownload = useCallback((url: string) => {
     const a = document.createElement('a')
     a.href = url
     a.download = fileMeta?.name || ''
@@ -367,13 +404,13 @@ export default function TeacherBatchReviewPage() {
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)
-  }
+  }, [fileMeta])
 
-  const closePreview = () => {
+  const closePreview = useCallback(() => {
     setPreviewUrl(null)
     setDocxPreviewHtml(null)
     setPreviewError(null)
-  }
+  }, [])
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -394,36 +431,77 @@ export default function TeacherBatchReviewPage() {
     return '附件预览'
   }
 
-  /** 拖动分隔条调整 AI 面板左侧附件预览的宽度 */
-  const handlePreviewResizeStart = useCallback((e: React.MouseEvent) => {
-    e.preventDefault()
+  /**
+   * 拖动分隔条调整 AI 面板左侧附件预览的宽度。
+   *
+   * 性能要点（这三点是原来卡顿的根因）：
+   * 1. 拖动期间只按 rAF 合帧直接写 DOM 宽度，不 setState。原来每个 mousemove 都
+   *    setAiPreviewWidth，等于每帧重渲染整个 931 行的页面（Tree + AI 面板 + 全部气泡）。
+   * 2. 用 pointer capture 把 move/up 绑在分隔条自身：指针移出窗口或掠过 PDF iframe
+   *    也不会丢事件。老实现挂在 document 上，一旦漏掉 mouseup 就会残留监听器
+   *    （之后鼠标随便移动都会改宽度），并把 br-ai-resizing 永久锁住。
+   * 3. 松手时才把像素宽度换算回百分比同步进 state。
+   */
+  const handlePreviewResizeStart = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.pointerType === 'mouse' && e.button !== 0) return
     const container = aiOverlayRef.current
-    if (!container) return
+    const pane = aiPreviewRef.current
+    if (!container || !pane) return
     const rect = container.getBoundingClientRect()
-    if (rect.width <= 0) return
+    const startPx = pane.offsetWidth
+    if (rect.width <= 0 || startPx <= 0) return
 
-    const startWidthPx = (rect.width * aiPreviewWidth) / 100
-    const maxWidthPx = Math.max(280, rect.width - 320)
+    e.preventDefault()
+    e.currentTarget.setPointerCapture(e.pointerId)
 
-    const handleMove = (ev: MouseEvent) => {
-      const nextPx = Math.min(Math.max(startWidthPx + (ev.clientX - e.clientX), 280), maxWidthPx)
-      setAiPreviewWidth((nextPx / rect.width) * 100)
+    previewDragRef.current = {
+      pointerId: e.pointerId,
+      startX: e.clientX,
+      startPx,
+      containerWidth: rect.width,
+      maxPx: Math.max(PREVIEW_MIN_PX, rect.width - CHAT_MIN_PX),
+      pendingPx: startPx,
+      rafId: 0
     }
-    const handleUp = () => {
-      document.removeEventListener('mousemove', handleMove)
-      document.removeEventListener('mouseup', handleUp)
-      document.body.style.cursor = ''
-      document.body.style.userSelect = ''
-      setPreviewResizing(false)
-    }
 
-    // 拖动时禁用 iframe 的鼠标事件，否则指针进入 PDF 区域会中断拖动
     setPreviewResizing(true)
-    document.addEventListener('mousemove', handleMove)
-    document.addEventListener('mouseup', handleUp)
     document.body.style.cursor = 'col-resize'
     document.body.style.userSelect = 'none'
-  }, [aiPreviewWidth])
+  }, [])
+
+  const handlePreviewResizeMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    const drag = previewDragRef.current
+    if (!drag || drag.pointerId !== e.pointerId) return
+
+    drag.pendingPx = Math.min(
+      Math.max(drag.startPx + (e.clientX - drag.startX), PREVIEW_MIN_PX),
+      drag.maxPx
+    )
+    if (drag.rafId) return
+    drag.rafId = requestAnimationFrame(() => {
+      drag.rafId = 0
+      if (aiPreviewRef.current) aiPreviewRef.current.style.width = drag.pendingPx + 'px'
+    })
+  }, [])
+
+  const handlePreviewResizeEnd = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    const drag = previewDragRef.current
+    if (!drag || drag.pointerId !== e.pointerId) return
+    previewDragRef.current = null
+
+    if (drag.rafId) cancelAnimationFrame(drag.rafId)
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+      e.currentTarget.releasePointerCapture(e.pointerId)
+    }
+
+    const percent = (drag.pendingPx / drag.containerWidth) * 100
+    // 先把最终宽度写回百分比，这样即使下面 setState 因值相同被 React 跳过，DOM 也不会残留 px
+    if (aiPreviewRef.current) aiPreviewRef.current.style.width = percent + '%'
+    setAiPreviewWidth(percent)
+    setPreviewResizing(false)
+    document.body.style.cursor = ''
+    document.body.style.userSelect = ''
+  }, [])
 
   return (
     <>
@@ -578,7 +656,7 @@ export default function TeacherBatchReviewPage() {
                 {selectedSubmission?.submit_content && (
                   <div className="br-content-card">
                     <div className="br-card-label">提交内容</div>
-                    <div className="br-content-html" dangerouslySetInnerHTML={{ __html: formatRichTextForDisplay(selectedSubmission.submit_content) }} />
+                    <div className="br-content-html" dangerouslySetInnerHTML={{ __html: submitContentHtml }} />
                   </div>
                 )}
 
@@ -664,7 +742,7 @@ export default function TeacherBatchReviewPage() {
                 )}
 
                 {/* 悬浮 AI 按钮 */}
-                <div className="br-ai-fab" onClick={() => setShowAiPanel(true)} title="AI 助手">
+                <div className="br-ai-fab" onClick={handleOpenAiPanel} title="AI 助手">
                   <RobotOutlined style={{ fontSize: 24 }} />
                   <span className="br-ai-fab-label">AI</span>
                 </div>
@@ -678,7 +756,7 @@ export default function TeacherBatchReviewPage() {
               {/* 左侧：附件预览（PDF 可滚动查看） */}
               {fileMeta && !aiPreviewCollapsed && (
                 <>
-                  <div className="br-ai-preview" style={{ width: `${aiPreviewWidth}%` }}>
+                  <div className="br-ai-preview" ref={aiPreviewRef} style={{ width: `${aiPreviewWidth}%` }}>
                     <div className="br-ai-preview-header">
                       <span className="br-ai-preview-title" title={fileMeta.name}>
                         {renderFileTypeIcon(fileMeta.name)}
@@ -702,6 +780,9 @@ export default function TeacherBatchReviewPage() {
                       </div>
                     </div>
                     <div className="br-ai-preview-body">
+                      {previewResizing && isPdfFile(fileMeta.url) && (
+                        <div className="br-ai-preview-drag-hint">拖动中，松开后恢复预览</div>
+                      )}
                       {isPdfFile(fileMeta.url) ? (
                         <iframe
                           src={fileMeta.url}
@@ -728,7 +809,11 @@ export default function TeacherBatchReviewPage() {
                   </div>
                   <div
                     className="br-ai-preview-resizer"
-                    onMouseDown={handlePreviewResizeStart}
+                    onPointerDown={handlePreviewResizeStart}
+                    onPointerMove={handlePreviewResizeMove}
+                    onPointerUp={handlePreviewResizeEnd}
+                    onPointerCancel={handlePreviewResizeEnd}
+                    onLostPointerCapture={handlePreviewResizeEnd}
                     title="拖动调整预览宽度"
                   />
                 </>
@@ -754,7 +839,7 @@ export default function TeacherBatchReviewPage() {
                   taskTitle={selectedTask?.title || '未知任务'}
                   taskId={selectedTask?.id || 0}
                   students={students}
-                  onClose={() => setShowAiPanel(false)}
+                  onClose={handleCloseAiPanel}
                   onImportEvaluation={handleImportAiEvaluation}
                 />
               </div>

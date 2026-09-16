@@ -5,7 +5,7 @@
  *
  * 作为全屏叠加层显示，通过 onClose 返回内容区
  */
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useEffect, useCallback, useMemo, memo } from 'react'
 import {
   Input, Button, Spin, Empty, Select, Checkbox, Tag, message
 } from 'antd'
@@ -46,7 +46,7 @@ const QUICK_ACTIONS = [
   { label: '总结内容', prompt: '请总结学生提交的核心内容要点。' }
 ]
 
-export default function AiChatPanel({
+function AiChatPanelBase({
   submissionId,
   studentId,
   studentName,
@@ -157,10 +157,11 @@ export default function AiChatPanel({
 
   // ============ 审阅 ============
 
-  const studentOptions = students.map(s => ({
+  // 每次渲染都重建数组会让依赖它的 handleStartAnalysis 失效，缓存起来
+  const studentOptions = useMemo(() => students.map(s => ({
     value: s.id,
     label: `${s.username}（${s.student_id}）`
-  }))
+  })), [students])
 
   const handleReviewStudentChange = useCallback(async (sid: number) => {
     setReviewStudentId(sid)
@@ -480,3 +481,10 @@ export default function AiChatPanel({
     </div>
   )
 }
+
+/**
+ * 会话状态（消息列表、流式 token、模式切换）都在面板内部，
+ * 外面的一键审阅页因拖动分栏、切换提交等原因重渲染时，
+ * 不必连带重渲染整条消息列表。
+ */
+export default memo(AiChatPanelBase)

@@ -737,6 +737,8 @@
   flex-direction: column;
   background: var(--bg-soft);
   border-right: 1px solid var(--border-color);
+  /* 拖动时宽度持续变化，把重排/重绘限制在这一栏内部，不牵连整页 */
+  contain: layout paint;
 }
 
 .br-ai-preview-header {
@@ -817,6 +819,8 @@
   cursor: col-resize;
   background: transparent;
   transition: background 0.15s;
+  /* 触摸/手写笔拖动时不要触发页面滚动 */
+  touch-action: none;
 }
 
 .br-ai-preview-resizer:hover,
@@ -824,11 +828,26 @@
   background: rgba(99, 102, 241, 0.35);
 }
 
-/* 拖动分隔条时，让 iframe 不吞掉鼠标事件 */
-.br-ai-overlay.br-ai-resizing,
+/* 拖动分隔条时让 iframe / 图片不吞掉指针事件。
+   注意不能给 .br-ai-overlay 本身加 pointer-events: none：
+   分隔条要靠 pointer capture 接收 move/up，它也是遮罩层的子元素。 */
 .br-ai-overlay.br-ai-resizing .br-ai-preview-iframe,
 .br-ai-overlay.br-ai-resizing .br-ai-preview-image {
   pointer-events: none;
+}
+
+/* 拖动期间把 PDF iframe 从布局里摘掉。
+   Chrome 内置 PDF 阅读器每收到一次尺寸变化都要重排/重绘整份 PDF（独立进程 + IPC），
+   这是拖动卡顿的主因；display:none 后它的文档尺寸不再逐帧变化，松手时只恢复一次。 */
+.br-ai-overlay.br-ai-resizing .br-ai-preview-iframe {
+  display: none;
+}
+
+/* 拖动时 PDF 被 display:none 摘掉，用这行提示补位（仅 PDF 预览时渲染） */
+.br-ai-preview-drag-hint {
+  margin: auto;
+  font-size: 12px;
+  color: var(--text-tertiary);
 }
 
 /* 收起后的窄条 */
